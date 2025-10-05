@@ -1,8 +1,0 @@
-<?xml version = '1.0' encoding = 'UTF-8'?>
-<OSDM_Design class="oracle.dbtools.crest.model.design.Design" name="design" id="EC831E19-4CDA-1B58-D3F6-7419B4A0F786" version="3.5">
-<createdBy>Teea</createdBy>
-<createdTime>2025-10-05 14:28:40 UTC</createdTime>
-<ownerDesignName>design</ownerDesignName>
-<capitalNames>false</capitalNames>
-<designId>EC831E19-4CDA-1B58-D3F6-7419B4A0F786</designId>
-</OSDM_Design>
