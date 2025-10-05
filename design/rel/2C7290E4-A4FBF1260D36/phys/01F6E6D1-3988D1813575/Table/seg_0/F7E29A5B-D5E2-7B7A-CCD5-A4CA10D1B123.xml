@@ -1,0 +1,67 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<TableProxyOraclev20c class="oracle.dbtools.crest.model.design.storage.oracle.v20c.TableProxyOraclev20c" name="CONSTRUCTII" directorySegmentName="seg_0" id="F7E29A5B-D5E2-7B7A-CCD5-A4CA10D1B123">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<schemaObject>A9F7B041-E0E8-8849-735E-2233AB6784BF</schemaObject>
+<logging>YES</logging>
+<partitionedRowMovement>DISABLE</partitionedRowMovement>
+<segment>2B252EA7-827D-C173-4998-F071409F9877</segment>
+<tableSpace>2A2DEF2A-E141-B937-0460-3470438B18EF</tableSpace>
+<temporaryChanged>false</temporaryChanged>
+<accessDriverType>oracle_loader</accessDriverType>
+<rejectLimit></rejectLimit>
+<inMemory>NO</inMemory>
+<columnProxies itemClass="oracle.dbtools.crest.model.design.storage.oracle.v12c.ColumnProxyOraclev12c">
+<ColumnProxy name="ID_TEREN" id="10616BA7-33BC-67EE-5760-771E95124852">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="ID_CONSTRUCTIE" id="63FEEB73-12E3-A6D5-CA27-232A1B5FDF3A">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="FORMA_CONSTRUCTIE" id="D41C7406-6A18-6F05-5FCB-B774502152E3">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+</ColumnProxy>
+<ColumnProxy name="COD_CONSTRUCTIE" id="F844BAAE-4EE4-738B-9870-7A45436E50DC">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+</ColumnProxy>
+</columnProxies>
+<indexProxies>
+<IndexProxy class="oracle.dbtools.crest.model.design.storage.oracle.v10g.IndexProxyOraclev10g" name="PK_CONST" id="2F762DDB-876F-0AB4-7979-834944D664C2">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<schemaObject>A9F7B041-E0E8-8849-735E-2233AB6784BF</schemaObject>
+<segment>A6E1557C-4F1F-B07E-E18D-8FE789D700E1</segment>
+<tableSpace>2A2DEF2A-E141-B937-0460-3470438B18EF</tableSpace>
+</IndexProxy>
+</indexProxies>
+<foreignKeys>
+<ForeignKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.FKProxyOraclev10g" name="SYS_C00808064" id="C346AFB2-AA09-F3E0-A870-F37537A238D8">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:49 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+</ForeignKey>
+</foreignKeys>
+<primaryKeys>
+<PrimaryKey class="oracle.dbtools.crest.model.design.storage.oracle.v10g.PKProxyOraclev10g" name="PK_CONST" id="53F8275A-B3CD-DC5A-BD26-2DEDD98668C6">
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<segment>A6E1557C-4F1F-B07E-E18D-8FE789D700E1</segment>
+<tableSpace>2A2DEF2A-E141-B937-0460-3470438B18EF</tableSpace>
+<existingIndex>2F762DDB-876F-0AB4-7979-834944D664C2</existingIndex>
+<indexSegment>A6E1557C-4F1F-B07E-E18D-8FE789D700E1</indexSegment>
+<indexSort>SORTED</indexSort>
+<usingIndex>BY INDEX NAME</usingIndex>
+</PrimaryKey>
+</primaryKeys>
+</TableProxyOraclev20c>

@@ -1,0 +1,130 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<Table class="oracle.dbtools.crest.model.design.relational.Table" directorySegmentName="seg_0" id="723E9358-7477-AD83-E66C-027BE16C34EE" schemaObject="A9F7B041-E0E8-8849-735E-2233AB6784BF" name="TERENURI">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>CRANGAA_BDSA_2025</sourceObjSchema>
+<sourceObjName>TERENURI</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<spatialTable>true</spatialTable>
+<allowColumnReorder>false</allowColumnReorder>
+<existDependencyGenerateInDDl>true</existDependencyGenerateInDDl>
+<parsed>true</parsed>
+<columns itemClass="oracle.dbtools.crest.model.design.relational.Column">
+<Column name="ID_TEREN" id="911474B0-A638-3886-A3BF-CC10E4D315A0">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>TERENURI</sourceObjSchema>
+<sourceObjName>ID_TEREN</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT019</logicalDatatype>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="TIP_TEREN" id="71BF935E-175D-3DBA-0C12-BB334E500C2C">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>TERENURI</sourceObjSchema>
+<sourceObjName>TIP_TEREN</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<constraintName>CK_TTIP</constraintName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>9 BYTE</dataTypeSize>
+<listOfValues>
+<valueDef value="&apos;ASFALT&apos;" description=""/>
+<valueDef value="&apos;IARBA&apos;" description=""/>
+<valueDef value="&apos;INTRARE&apos;" description=""/>
+<valueDef value="&apos;PIETRIS&apos;" description=""/>
+</listOfValues>
+<ownDataTypeParameters>9 BYTE,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+<Column name="NUME_TEREN" id="2342FE20-A3B2-8795-04DA-43C6ECA8C5E4">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>TERENURI</sourceObjSchema>
+<sourceObjName>NUME_TEREN</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<useDomainConstraints>false</useDomainConstraints>
+<use>1</use>
+<logicalDatatype>LOGDT024</logicalDatatype>
+<dataTypeSize>50 BYTE</dataTypeSize>
+<ownDataTypeParameters>50 BYTE,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+<notNullConstraintName>NN_NUMET</notNullConstraintName>
+</Column>
+<Column name="FORMA_TEREN" id="42C33189-E005-8998-35AB-6A300AA8E5A7">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>TERENURI</sourceObjSchema>
+<sourceObjName>FORMA_TEREN</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<nullsAllowed>true</nullsAllowed>
+<useDomainConstraints>false</useDomainConstraints>
+<allowSubtypeSubstitution>false</allowSubtypeSubstitution>
+<use>3</use>
+<structuredType>47E390DE-0671-C4B1-8428-0F45CBEE18F8</structuredType>
+<ownDataTypeParameters>,,</ownDataTypeParameters>
+<autoIncrementCycle>false</autoIncrementCycle>
+</Column>
+</columns>
+<indexes itemClass="oracle.dbtools.crest.model.design.relational.Index">
+<ind_PK_UK id="51BDBD64-6D28-1B4D-D2CA-A3389AF3F2E6" name="PK_TID">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>CRANGAA_BDSA_2025</sourceObjSchema>
+<sourceObjName>PK_TID</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<pk>true</pk>
+<indexState>Primary Constraint</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="911474B0-A638-3886-A3BF-CC10E4D315A0"/>
+</indexColumnUsage>
+</ind_PK_UK>
+<ind_PK_UK id="5840ED65-9AD8-B481-DDAE-62D355C1E04E" schemaObject="A9F7B041-E0E8-8849-735E-2233AB6784BF" name="PK_TID">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>CRANGAA_BDSA_2025</sourceObjSchema>
+<sourceObjName>PK_TID</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:48 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<indexState>Unique Plain Index</indexState>
+<isSurrogateKey>false</isSurrogateKey>
+<indexColumnUsage>
+<colUsage columnID="911474B0-A638-3886-A3BF-CC10E4D315A0"/>
+</indexColumnUsage>
+</ind_PK_UK>
+</indexes>
+<spatialDefinitions>
+<spatialColumnDefinition class="oracle.dbtools.crest.model.design.relational.SpatialColumnDefObject" name="ColumnDefinition_1" objectID="B6286F63-C35B-5780-C6A2-2EDF92407281">
+<function>false</function>
+<spatialColumn>42C33189-E005-8998-35AB-6A300AA8E5A7</spatialColumn>
+<systemID>4326</systemID>
+<spatialDimensions>
+<spatialDimension class="oracle.dbtools.crest.model.design.relational.SpatialColumnDefObject$TableDimension">
+<name>X</name>
+<lowBoundary>0</lowBoundary>
+<upperBoundary>50</upperBoundary>
+<tolerance>0.005</tolerance>
+</spatialDimension>
+<spatialDimension class="oracle.dbtools.crest.model.design.relational.SpatialColumnDefObject$TableDimension">
+<name>Y</name>
+<lowBoundary>0</lowBoundary>
+<upperBoundary>50</upperBoundary>
+<tolerance>0.005</tolerance>
+</spatialDimension>
+</spatialDimensions>
+</spatialColumnDefinition>
+</spatialDefinitions>
+</Table>

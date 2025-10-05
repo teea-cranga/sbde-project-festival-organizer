@@ -1,0 +1,19 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<FKIndexAssociation class="oracle.dbtools.crest.model.design.relational.FKIndexAssociation" directorySegmentName="seg_0" id="5698FE60-E6A4-65A7-FF1F-874401AAA786" containerWithKeyObject="F7E29A5B-D5E2-7B7A-CCD5-A4CA10D1B123" localFKIndex="C346AFB2-AA09-F3E0-A870-F37537A238D8" name="SYS_C00808064">
+<sourceConnName>SBDE</sourceConnName>
+<sourceObjSchema>CRANGAA_BDSA_2025</sourceObjSchema>
+<sourceObjName>SYS_C00808064</sourceObjName>
+<createdBy>Teea</createdBy>
+<createdTime>2025-10-05 15:50:49 UTC</createdTime>
+<ownerDesignName>design</ownerDesignName>
+<referredTableLongName>CRANGAA_BDSA_2025.TERENURI</referredTableLongName>
+<deleteRule>NO ACTION</deleteRule>
+<referredTableID>723E9358-7477-AD83-E66C-027BE16C34EE</referredTableID>
+<keyObject>51BDBD64-6D28-1B4D-D2CA-A3389AF3F2E6</keyObject>
+<referredKeyID>51BDBD64-6D28-1B4D-D2CA-A3389AF3F2E6</referredKeyID>
+<mandatory>false</mandatory>
+<refColNames>ID_TEREN</refColNames>
+<transferable>true</transferable>
+<rely>false</rely>
+<columnDependencyConstraintGenerateInDDL>true</columnDependencyConstraintGenerateInDDL>
+</FKIndexAssociation>
