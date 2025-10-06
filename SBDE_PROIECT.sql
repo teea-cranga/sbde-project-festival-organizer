@@ -464,12 +464,107 @@ BEGIN
 END;
 /
 
--- WIP PART
 /*
     4. Sa se calculeze cat % din aria festivalului este ocupata de constructii. Terenurile 8 si 9 nu sunt incluse
 */
 
+DECLARE
+    ARIE_TEREN NUMBER;
+    ARIE_CONSTRUCTII NUMBER;
+BEGIN
+    SELECT SUM(SDO_GEOM.SDO_AREA(FORMA_CONSTRUCTIE, 0.005)) INTO ARIE_CONSTRUCTII FROM CONSTRUCTII;
+    SELECT SUM(SDO_GEOM.SDO_AREA(FORMA_TEREN, 0.005)) INTO ARIE_TEREN FROM TERENURI WHERE ID_TEREN NOT IN(8,9);
+    DBMS_OUTPUT.PUT_LINE('PROCENTAJUL DE TEREN AL FESTIVALULUI ACOPERIT ESTE DE ' || ROUND(ARIE_CONSTRUCTII/ARIE_TEREN*100,2) || '%');
+END;
+/
+
 /*
-    5. Sa se creeze un trigger care nu permite amplasarea cladirilor de tip CORT MANCARE, BAR, CORT MERCH pe teren de tip PIETRIS.
+ 5. Să se determine care este suprafata de intersecţie dintre terenuri si cladirile care se afla pe acestea 
 */
+
+SELECT T.ID_TEREN, NUME_TEREN, SUM(SDO_GEOM.SDO_AREA(SDO_GEOM.SDO_INTERSECTION(FORMA_TEREN, FORMA_CONSTRUCTIE, 0.005),0.005)) AS ARIE_OCUPATA_CLADIRI
+FROM TERENURI T
+JOIN CONSTRUCTII C ON C.ID_TEREN = T.ID_TEREN
+GROUP BY T.ID_TEREN, NUME_TEREN;
+
+/*
+ 6. Sa se creeze un layer in Map View cu terenurile unite 
+*/
+
+SELECT sdo_aggr.sdo_aggr_set_union 
+  (CURSOR(SELECT FORMA_TEREN FROM TERENURI), 0.005 )
+FROM dual;
+
+-- ca sa fie compatibil cu Map View
+CREATE TABLE ARIE_TOTALA_FESTIVAL AS SELECT sdo_aggr.sdo_aggr_set_union 
+  (CURSOR(SELECT FORMA_TEREN FROM TERENURI), 0.005 ) ARIE_TOTALA
+FROM dual;
+
+/*
+ 7. Calculeaza distanta de la intrarea in festival la orice cort de pe teren (presupunem ca punctul de la care calculam este 6,4)
+*/
+
+SELECT 4 * SDO_GEOM.SDO_DISTANCE(
+ SDO_GEOMETRY(
+    SDO_POINT2D,
+    NULL,
+    SDO_POINT_TYPE(6,1,NULL),
+    NULL,
+    NULL
+    ),
+ FORMA_CONSTRUCTIE, 0.005) AS DISTANTA_IN_M, DESCRIERE
+ FROM CONSTRUCTII C
+ JOIN INFO_CONSTRUCTII I ON I.ID_CONSTRUCTIE=C.ID_CONSTRUCTIE;
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--/*
+--    ?. Sa se creeze un trigger care nu permite amplasarea cladirilor de tip CORT MANCARE, BAR, CORT MERCH pe teren de tip PIETRIS.
+--*/
+--
+--CREATE OR REPLACE TRIGGER TR_PIETRIS_CONSTRUCTII BEFORE INSERT OR UPDATE ON CONSTRUCTII
+--FOR EACH ROW
+--DECLARE
+--    V_TIPC INFO_CONSTRUCTII.TIP_CONSTRUCTIE%TYPE;
+--    V_TIPT TERENURI.TIP_TEREN%TYPE;
+--    V_FORMA TERENURI.FORMA_TEREN%TYPE;
+--BEGIN
+--    SELECT C.TIP_CONSTRUCTIE, T.TIP_TEREN, T.FORMA_TEREN INTO V_TIPC, V_TIPT, V_FORMA FROM TERENURI T, INFO_CONSTRUCTII C
+--    WHERE :NEW.ID_CONSTRUCTIE = C.ID_CONSTRUCTIE  AND :NEW.ID_TEREN = T.ID_TEREN;
+--    IF V_TIPC IN ('CORT MANCARE','BAR','CORT MERCH') AND V_TIPT = 'PIETRIS' AND SDO_GEOM.RELATE(:NEW.FORMA_CONSTRUCTIE, 'COVEREDBY', V_FORMA, 0.005) = 'COVEREDBY' THEN
+--        RAISE_APPLICATION_ERROR(-20001,'Corturile de mancare, merch si barurile nu pot fi amplasate pe terenurile cu pietris.'); 
+--    END IF;
+--END;
+--/
+--
+---- TESTARE INSERT
+--INSERT INTO CONSTRUCTII VALUES(
+--    20,
+--    5,
+--    SDO_GEOMETRY(
+--    2003,
+--    NULL,
+--    NULL,
+--    SDO_ELEM_INFO_ARRAY(1,1003,3),
+--    SDO_ORDINATE_ARRAY(9,12, 10,14)
+--    ),
+--    3
+--);
+
+
 
