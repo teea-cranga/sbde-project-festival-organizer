@@ -439,7 +439,7 @@ SELECT * FROM CONSTRUCTII
 WHERE ID_TEREN = 4;
     
 /*
-   2. Sa se afiseze in Map View constructiile care au capacitatea mai mare de 10 persoane 
+    2. Sa se afiseze in Map View constructiile care au capacitatea mai mare de 10 persoane 
     si sunt pe terenurile 2 si 3
 */
 SELECT C.ID_CONSTRUCTIE, C.FORMA_CONSTRUCTIE, CAPACITATE FROM CONSTRUCTII C 
@@ -447,7 +447,23 @@ JOIN INFO_CONSTRUCTII I ON I.ID_CONSTRUCTIE = C.ID_CONSTRUCTIE
 WHERE (ID_TEREN = 2 OR ID_TEREN = 3) AND CAPACITATE > 10;
 
 /*
-    3. Sa se calculeze distanta de la scene la cea mai apropiata baie. (distanta e raportata 1:5m)
+    3. Sa se creeze un layer in Map View cu terenurile unite 
+*/
+
+SELECT sdo_aggr.sdo_aggr_set_union 
+  (CURSOR(SELECT FORMA_TEREN FROM TERENURI), 0.005 )
+FROM dual;
+
+-- ca sa fie compatibil cu Map View
+CREATE TABLE ARIE_TOTALA_FESTIVAL AS SELECT sdo_aggr.sdo_aggr_set_union 
+  (CURSOR(SELECT FORMA_TEREN FROM TERENURI), 0.005 ) ARIE_TOTALA
+FROM dual;
+
+
+--Alte interogari spatiale
+
+/*
+    4. Sa se calculeze distanta de la scene la cea mai apropiata baie. (distanta e raportata 1:5m)
 */
 SET SERVEROUTPUT ON;
 DECLARE
@@ -465,7 +481,7 @@ END;
 /
 
 /*
-    4. Sa se calculeze cat % din aria festivalului este ocupata de constructii. Terenurile 8 si 9 nu sunt incluse
+    5. Sa se calculeze cat % din aria festivalului este ocupata de constructii. Terenurile 8 si 9 nu sunt incluse
 */
 
 DECLARE
@@ -479,7 +495,7 @@ END;
 /
 
 /*
- 5. Să se determine care este suprafata de intersecţie dintre terenuri si cladirile care se afla pe acestea 
+    6. Sa se determine care este suprafata de intersectie dintre terenuri si cladirile care se afla pe acestea 
 */
 
 SELECT T.ID_TEREN, NUME_TEREN, SUM(SDO_GEOM.SDO_AREA(SDO_GEOM.SDO_INTERSECTION(FORMA_TEREN, FORMA_CONSTRUCTIE, 0.005),0.005)) AS ARIE_OCUPATA_CLADIRI
@@ -488,23 +504,10 @@ JOIN CONSTRUCTII C ON C.ID_TEREN = T.ID_TEREN
 GROUP BY T.ID_TEREN, NUME_TEREN;
 
 /*
- 6. Sa se creeze un layer in Map View cu terenurile unite 
+    7. Calculeaza distanta de la intrarea in festival la orice cort de pe teren (presupunem ca punctul de la care calculam este 6,4)
 */
 
-SELECT sdo_aggr.sdo_aggr_set_union 
-  (CURSOR(SELECT FORMA_TEREN FROM TERENURI), 0.005 )
-FROM dual;
-
--- ca sa fie compatibil cu Map View
-CREATE TABLE ARIE_TOTALA_FESTIVAL AS SELECT sdo_aggr.sdo_aggr_set_union 
-  (CURSOR(SELECT FORMA_TEREN FROM TERENURI), 0.005 ) ARIE_TOTALA
-FROM dual;
-
-/*
- 7. Calculeaza distanta de la intrarea in festival la orice cort de pe teren (presupunem ca punctul de la care calculam este 6,4)
-*/
-
-SELECT 4 * SDO_GEOM.SDO_DISTANCE(
+SELECT 5 * SDO_GEOM.SDO_DISTANCE(
  SDO_GEOMETRY(
     SDO_POINT2D,
     NULL,
@@ -512,59 +515,116 @@ SELECT 4 * SDO_GEOM.SDO_DISTANCE(
     NULL,
     NULL
     ),
- FORMA_CONSTRUCTIE, 0.005) AS DISTANTA_IN_M, DESCRIERE
+ FORMA_CONSTRUCTIE, 0.005) AS DISTANTA_IN_M, DESCRIERE, NUME_FIRMA
  FROM CONSTRUCTII C
  JOIN INFO_CONSTRUCTII I ON I.ID_CONSTRUCTIE=C.ID_CONSTRUCTIE;
-
     
+/*
+    8. Afiseaza constructiile care stau pe marginile festivalului (au cel putin o latura care se intersecteaza cu aria festivalului)
+*/
+
+SELECT C.* FROM CONSTRUCTII C
+JOIN TERENURI T ON T.ID_TEREN = C.ID_TEREN
+WHERE SDO_GEOM.RELATE(FORMA_TEREN,'COVERS', FORMA_CONSTRUCTIE,0.005) = 'COVERS'
+ORDER BY ID_CONSTRUCTIE; 
+
+/*
+    9. Sa se calculeze aria ocupata de fiecare tip de constructie
+*/
+
+--varianta cu PARTITION BY
+SELECT DISTINCT TIP_CONSTRUCTIE, COD_CONSTRUCTIE, 
+SUM(SDO_GEOM.SDO_AREA(FORMA_CONSTRUCTIE ,0.005)) OVER(partition by cod_constructie) AS ARIE_CONSTRUCTII
+FROM CONSTRUCTII C
+JOIN INFO_CONSTRUCTII I ON I.ID_CONSTRUCTIE = C.ID_CONSTRUCTIE;
+
+--varianta cu GROUP BY
+SELECT TIP_CONSTRUCTIE, COD_CONSTRUCTIE, SUM(SDO_GEOM.SDO_AREA(FORMA_CONSTRUCTIE ,0.005)) FROM CONSTRUCTII C
+JOIN INFO_CONSTRUCTII I ON C.ID_CONSTRUCTIE = I.ID_CONSTRUCTIE
+GROUP BY TIP_CONSTRUCTIE, COD_CONSTRUCTIE;
 
 
+/*
+    10. Sa se afiseze perimetrul si forma minima de acoperire a constructiilor de tip cort mancare si baruri
+*/
+
+SELECT SDO_AGGR_CONVEXHULL(
+         SDOAGGRTYPE(C.FORMA_CONSTRUCTIE, 0.005)
+       ),
+SDO_GEOM.SDO_LENGTH(SDO_AGGR_CONVEXHULL(
+         SDOAGGRTYPE(C.FORMA_CONSTRUCTIE, 0.005)
+       ),0.005)
+FROM CONSTRUCTII C
+JOIN INFO_CONSTRUCTII I ON C.ID_CONSTRUCTIE = I.ID_CONSTRUCTIE
+WHERE I.TIP_CONSTRUCTIE IN ('CORT MANCARE','BAR');
+
+/*
+    11. Sa se determine ce cladiri se afla in poligonul buffer al oricarei cladiri (input de la utilizator) (presupunem ca bufferul va fi de 3m)
+*/
+
+DECLARE 
+    V_BUFFER SDO_GEOMETRY;
+    TYPE REZ_ARRAY IS VARRAY (17) OF NUMBER;
+    R_ARRAY REZ_ARRAY;
+BEGIN
+    SELECT SDO_GEOM.SDO_BUFFER(FORMA_CONSTRUCTIE, 3, 0.005) INTO V_BUFFER FROM CONSTRUCTII WHERE ID_CONSTRUCTIE = :p_var;
+    SELECT ID_CONSTRUCTIE BULK COLLECT INTO R_ARRAY FROM CONSTRUCTII WHERE SDO_GEOM.RELATE(V_BUFFER, 'ANYINTERACT', FORMA_CONSTRUCTIE, 0.005) = 'TRUE';
+    FOR I IN 1..R_ARRAY.COUNT LOOP
+         dbms_output.PUT_LINE(R_ARRAY(i));
+    END LOOP;
+END;
+/
+
+/*
+    12. Sa se determine aria "libera" a festivalului
+*/
+
+SELECT 
+    SUM(SDO_GEOM.SDO_AREA(SDO_GEOM.SDO_DIFFERENCE(T.FORMA_TEREN, C.FORMA_CONSTRUCTIE, 0.005),0.005)) AS ARIE_LIBERA
+FROM TERENURI T
+JOIN CONSTRUCTII C ON C.ID_TEREN = T.ID_TEREN;
 
 
+/*
+    13. Sa se determine distanta dintre centrul corturilor (merch, bar, mancare) si scene
+*/
+
+SELECT C1.ID_CONSTRUCTIE, 5 * SDO_GEOM.SDO_DISTANCE(SDO_GEOM.SDO_CENTROID(C2.FORMA_CONSTRUCTIE, 0.005),C1.FORMA_CONSTRUCTIE, 0.005) AS DIST_DE_LA_CENTROID_LA_SCENA
+FROM CONSTRUCTII C1, CONSTRUCTII C2
+WHERE C1.ID_CONSTRUCTIE IN (SELECT ID_CONSTRUCTIE FROM INFO_CONSTRUCTII WHERE TIP_CONSTRUCTIE = 'SCENA')
+AND C2.ID_CONSTRUCTIE IN (SELECT ID_CONSTRUCTIE FROM INFO_CONSTRUCTII WHERE TIP_CONSTRUCTIE LIKE 'CORT%' OR TIP_CONSTRUCTIE = 'BAR');
 
 
+/*
+    14. Calculati diametrul maxim al constructiilor 
+*/
+
+SELECT TIP_CONSTRUCTIE, 5 * MAX(SDO_GEOM.SDO_DIAMETER(C.FORMA_CONSTRUCTIE, 0.005)) AS DIAMETRU_CONSTRUCTIE
+FROM CONSTRUCTII C
+JOIN INFO_CONSTRUCTII I ON C.ID_CONSTRUCTIE = I.ID_CONSTRUCTIE
+GROUP BY TIP_CONSTRUCTIE;
 
 
+/*
+    15. Sa se calculeze distanta maxima de la centrul de prim ajutor la toate scenele
+*/
 
+SELECT C1.ID_CONSTRUCTIE AS DE_LA, C2.ID_CONSTRUCTIE AS PANA_LA, 5* SDO_GEOM.SDO_MAXDISTANCE(C1.FORMA_CONSTRUCTIE, C2.FORMA_CONSTRUCTIE, 0.005) AS DIST_MAXIMA
+FROM CONSTRUCTII C1, CONSTRUCTII C2
+WHERE C1.COD_CONSTRUCTIE = 4 AND C2.COD_CONSTRUCTIE = 8;
 
+/*
+    16. Sa se afiseze o linie cu distanta maxima de la zonele de camping/parcare la intrarea de oaspeti (teorema lui Pitagora) :)
+*/
 
+SELECT T1.NUME_TEREN AS DE_LA,T2.NUME_TEREN AS PANA_LA, 
+SDO_GEOM.SDO_MAXDISTANCE_LINE(T1.FORMA_TEREN, T2.FORMA_TEREN, 0.005) AS LINIE,
+5 * SDO_GEOM.SDO_MAXDISTANCE(T1.FORMA_TEREN, T2.FORMA_TEREN, 0.005) AS DISTANTA
+FROM TERENURI T1, TERENURI T2
+WHERE T1.NUME_TEREN IN('ZONA CAMPING','PARCARE MASINI') AND T2.NUME_TEREN = 'INTRARE VIZITATORI';
 
-
-
-
-
---/*
---    ?. Sa se creeze un trigger care nu permite amplasarea cladirilor de tip CORT MANCARE, BAR, CORT MERCH pe teren de tip PIETRIS.
---*/
---
---CREATE OR REPLACE TRIGGER TR_PIETRIS_CONSTRUCTII BEFORE INSERT OR UPDATE ON CONSTRUCTII
---FOR EACH ROW
---DECLARE
---    V_TIPC INFO_CONSTRUCTII.TIP_CONSTRUCTIE%TYPE;
---    V_TIPT TERENURI.TIP_TEREN%TYPE;
---    V_FORMA TERENURI.FORMA_TEREN%TYPE;
---BEGIN
---    SELECT C.TIP_CONSTRUCTIE, T.TIP_TEREN, T.FORMA_TEREN INTO V_TIPC, V_TIPT, V_FORMA FROM TERENURI T, INFO_CONSTRUCTII C
---    WHERE :NEW.ID_CONSTRUCTIE = C.ID_CONSTRUCTIE  AND :NEW.ID_TEREN = T.ID_TEREN;
---    IF V_TIPC IN ('CORT MANCARE','BAR','CORT MERCH') AND V_TIPT = 'PIETRIS' AND SDO_GEOM.RELATE(:NEW.FORMA_CONSTRUCTIE, 'COVEREDBY', V_FORMA, 0.005) = 'COVEREDBY' THEN
---        RAISE_APPLICATION_ERROR(-20001,'Corturile de mancare, merch si barurile nu pot fi amplasate pe terenurile cu pietris.'); 
---    END IF;
---END;
---/
---
----- TESTARE INSERT
---INSERT INTO CONSTRUCTII VALUES(
---    20,
---    5,
---    SDO_GEOMETRY(
---    2003,
---    NULL,
---    NULL,
---    SDO_ELEM_INFO_ARRAY(1,1003,3),
---    SDO_ORDINATE_ARRAY(9,12, 10,14)
---    ),
---    3
---);
-
-
+CREATE TABLE LINII_MAX AS SELECT T1.NUME_TEREN AS DE_LA,T2.NUME_TEREN AS PANA_LA, 
+SDO_GEOM.SDO_MAXDISTANCE_LINE(T1.FORMA_TEREN, T2.FORMA_TEREN, 0.005) AS LINIE
+FROM TERENURI T1, TERENURI T2
+WHERE T1.NUME_TEREN IN('ZONA CAMPING','PARCARE MASINI') AND T2.NUME_TEREN = 'INTRARE VIZITATORI';
 
